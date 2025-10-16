@@ -1,14 +1,15 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from hangapp.models import Category, Note, Priority, Task, SubTask
 from hangapp.forms import CategoryForm, NoteForm, PriorityForm, SubTaskForm, TaskForm
 from django.db.models import Q
 from django.utils import timezone
 
-class HomePageView(ListView):
-    model = Category
+class HomePageView(TemplateView):
+    model = Task
     context_object_name = 'home'
     template_name = "home.html"
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import socket
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,7 @@ SECRET_KEY = 'django-insecure-2f(w^oqt#rs(t&_&%-v368qdh6)r-f_i#d@kl27#sh59w-s5op
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'psusphere.pythonanywhere.com']
 
 
 # Application definition
@@ -35,8 +36,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     'hangapp',
     'widget_tweaks',
+    'pwa',
+]
+if "pythonanywhere" in socket.gethostname():
+    SITE_ID = 2 # production site (psusphere.pythonanywhere.com)
+else:
+    SITE_ID = 1 # local site (127.0.0.1:8000)
+AUTHENTICATION_BACKENDS = [
+'django.contrib.auth.backends.ModelBackend',
+'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MIDDLEWARE = [
@@ -45,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -123,3 +140,48 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGIN_URL = '/accounts/login/' # where @login_required will send users
+LOGIN_REDIRECT_URL = '/' # where to go after successful login
+LOGOUT_REDIRECT_URL = '/accounts/login/' # after logout, go back to login
+ACCOUNT_LOGOUT_REDIRECT_URL = '/' # where to redirect after logout
+ACCOUNT_LOGOUT_ON_GET = True # logout immediately on GET
+ACCOUNT_LOGIN_METHODS = {"username", "email"} # allow login with username OR email
+ACCOUNT_SIGNUP_FIELDS = [
+"username*",
+"email*",
+"password1*",
+"password2*",
+]
+
+# PWA settings
+PWA_APP_NAME = 'ProjectSite'
+PWA_APP_DESCRIPTION = "A Progressive Web App version of ProjectSite"
+PWA_APP_THEME_COLOR = '#0A0A0A'
+PWA_APP_BACKGROUND_COLOR = '#FFFFFF'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'portrait'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/img/icon-192.png',
+        'sizes': '192x192'
+    },
+    {
+        'src': '/static/img/icon-512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/img/icon-192.png',
+        'sizes': '192x192'
+    },
+    {
+        'src': '/static/img/icon-512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
