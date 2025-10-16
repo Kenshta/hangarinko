@@ -9,7 +9,7 @@ from hangapp import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('home', HomePageView.as_view(), name='home'),
+    path('', views.HomePageView.as_view(), name='home'),
 
     #Listview
     path('category_list', CategoryList.as_view(), name='category-list'),
